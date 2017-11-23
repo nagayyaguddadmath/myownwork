@@ -1,14 +1,17 @@
 package com.bskyb.internettv.parental_control_service;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
+
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.bskyb.internettv.failure_exception.WrongArgumentException;
 import com.bskyb.internettv.thirdparty.MovieService;
 import com.bskyb.internettv.thirdparty.TechnicalFailureException;
 import com.bskyb.internettv.thirdparty.TitleNotFoundException;
@@ -19,10 +22,7 @@ public class ParentalControlServiceTest {
 	private static MovieService movieService;
 	private static ParentalControlService parentalControlService;
 
-	private static String TITLENOTFOUND_ERROR = "Movie Title Not found";
-	private static String TECHNICAL_ERROR = "Error occurred, currently you are not allowed to watch this movie";
-	private static String CONTROLNOTSET_ERROR = "Parental control is not provided, Please set parental control";
-	private static String SERVICEWRONGCONTROL_ERROR = "Parental control is not provided, Please set parental control";
+	private static final String TITLENOTFOUND_ERROR = "Movie Title Not found";
 
 	private static String MOVIE_TITLE = "MATRIX";
 
@@ -36,109 +36,7 @@ public class ParentalControlServiceTest {
 	}
 
 	@Test
-	public void test_both_null_parameters() {
-
-		try {
-			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(null, null);
-
-			boolean canWatch = parentalControlService.canWatchMovie(null, null);
-			fail("Error should be TitleNotFoundException, but returned value is: " + canWatch);
-		} catch (TitleNotFoundException e) {
-			fail("This error should have been converted to Exception");
-		} catch (TechnicalFailureException e) {
-			fail("This error should have been converted to Exception");
-		} catch (Exception e) {
-			assertTrue(e.getMessage().contains(TITLENOTFOUND_ERROR));
-		}
-	}
-
-	@Test
-	public void test_both_blank_parameters() {
-
-		try {
-			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie("", "");
-
-			boolean canWatch = parentalControlService.canWatchMovie("", "");
-			fail("Error should be TitleNotFoundException, but returned value is: " + canWatch);
-		} catch (TitleNotFoundException e) {
-			fail("Error should be Exception");
-		} catch (TechnicalFailureException e) {
-			fail("Error should be Exception");
-		} catch (Exception e) {
-			assertTrue(e.getMessage().contains(TITLENOTFOUND_ERROR));
-		}
-	}
-
-	@Test
-	public void test_title_null_parameter() {
-
-		try {
-			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), null);
-
-			boolean canWatch = parentalControlService.canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), null);
-			fail("Error should be TitleNotFoundException, but returned value is:" + canWatch);
-		} catch (TitleNotFoundException e) {
-			fail("Error should be Exception");
-		} catch (TechnicalFailureException e) {
-			fail("Error should be Exception");
-		} catch (Exception e) {
-			assertTrue(e.getMessage().contains(TITLENOTFOUND_ERROR));
-		}
-	}
-
-	@Test
-	public void test_title_blank_parameter() {
-
-		try {
-			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), "");
-
-			boolean canWatch = parentalControlService.canWatchMovie(null, "");
-			fail("Error should be TitleNotFoundException, but returned value is:" + canWatch);
-		} catch (TitleNotFoundException e) {
-			fail("Error should be Exception");
-		} catch (TechnicalFailureException e) {
-			fail("Error should be Exception");
-		} catch (Exception e) {
-			assertTrue(e.getMessage().contains(TITLENOTFOUND_ERROR));
-		}
-	}
-
-	@Test
-	public void test_parentcontrol_null_parameter() {
-
-		try {
-			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(null, MOVIE_TITLE);
-
-			boolean canWatch = parentalControlService.canWatchMovie(null, MOVIE_TITLE);
-			fail("Error should be thrown as parental control is not set, but returned value is:" + canWatch);
-		} catch (TitleNotFoundException e) {
-			fail("Error should be Exception");
-		} catch (TechnicalFailureException e) {
-			fail("Error should be Exception");
-		} catch (Exception e) {
-			assertTrue(e.getMessage().contains(CONTROLNOTSET_ERROR));
-		}
-	}
-
-	@Test
-	public void test_parentcontrol_blank_parameter() {
-
-		try {
-			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie("", MOVIE_TITLE);
-
-			boolean canWatch = parentalControlService.canWatchMovie("", MOVIE_TITLE);
-			fail("Error should be thrown as parental control is not set, but returned value is:" + canWatch);
-		} catch (TitleNotFoundException e) {
-			fail("Error should be Exception");
-		} catch (TechnicalFailureException e) {
-			fail("Error should be Exception");
-		} catch (Exception e) {
-			assertTrue(e.getMessage().contains(CONTROLNOTSET_ERROR));
-		}
-	}
-
-	@Test
-	public void test_titlenotfound_error() {
+	public void throwArgumenrErrorIfTitleNotFindErrorFromThirdParty() {
 
 		try {
 			TitleNotFoundException exception = new TitleNotFoundException();
@@ -148,18 +46,14 @@ public class ParentalControlServiceTest {
 
 			boolean canWatch = parentalControlService.canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), MOVIE_TITLE);
 			fail("Error should be TitleNotFoundException, but returned value is:" + canWatch);
-		} catch (TitleNotFoundException e) {
-			fail("Error should be Exception");
-		} catch (TechnicalFailureException e) {
-			fail("Error should be Exception");
 		} catch (Exception e) {
+			assertTrue(e instanceof WrongArgumentException);
 			assertTrue(e.getMessage().contains(TITLENOTFOUND_ERROR));
 		}
 	}
 
-
 	@Test
-	public void test_technical_error() {
+	public void returnFalseIfTechnicalErrorFromThirdParty() {
 
 		try {
 			TechnicalFailureException exception = new TechnicalFailureException();
@@ -168,18 +62,169 @@ public class ParentalControlServiceTest {
 			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), MOVIE_TITLE);
 
 			boolean canWatch = parentalControlService.canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), MOVIE_TITLE);
-			fail("Technical Error should have occurred, but returned value is:" + canWatch);
-		} catch (TitleNotFoundException e) {
-			fail("Technical Error should have occurred");
-		} catch (TechnicalFailureException e) {
-			fail("Technical should have been converted to Exception");
+			assertTrue("For technical errors, return false", canWatch == false);
 		} catch (Exception e) {
-			assertTrue(e.getMessage().contains(TECHNICAL_ERROR));
+			assertTrue("For technical errors, return false", false);
 		}
 	}
 
 	@Test
-	public void test_serviceWrongLevel_error() {
+	public void userWithParentalControlLevel18CanWatchMovieWithAnyRating() throws Exception {
+		ParentalControl userLevel = ParentalControl.LEVEL_18;
+		final List<ParentalControl> allowedRating = Arrays.asList(ParentalControl.values());
+
+		verifyUserCanWatch(userLevel, allowedRating);
+	}
+
+	@Test
+	public void userWithParentalControlLevel15CanWatchMoviesExcept15And18() throws Exception {
+		ParentalControl userLevel = ParentalControl.LEVEL_15;
+		final List<ParentalControl> allowedRating = Arrays.asList(ParentalControl.LEVEL_U, ParentalControl.LEVEL_PG,
+				ParentalControl.LEVEL_12, ParentalControl.LEVEL_15);
+
+		verifyUserCanWatch(userLevel, allowedRating);
+	}
+
+	@Test
+	public void userWithParentalControlLevel12CanWatchMoviesWithUAndPGAnd12() throws Exception {
+		ParentalControl userLevel = ParentalControl.LEVEL_12;
+		final List<ParentalControl> allowedRating = Arrays.asList(ParentalControl.LEVEL_U, ParentalControl.LEVEL_PG,
+				ParentalControl.LEVEL_12);
+
+		verifyUserCanWatch(userLevel, allowedRating);
+	}
+
+	@Test
+	public void userWithParentalControlLevelPGCanWatchMoviesWithUAndPG() throws Exception {
+		ParentalControl userLevel = ParentalControl.LEVEL_PG;
+		final List<ParentalControl> allowedRating = Arrays.asList(ParentalControl.LEVEL_U, ParentalControl.LEVEL_PG);
+
+		verifyUserCanWatch(userLevel, allowedRating);
+	}
+
+	@Test
+	public void userWithParentalControlLevelUCanWatchMoviesWithU() throws Exception {
+		ParentalControl userLevel = ParentalControl.LEVEL_18;
+		final List<ParentalControl> allowedRating = Arrays.asList(ParentalControl.LEVEL_U);
+
+		verifyUserCanWatch(userLevel, allowedRating);
+	}
+
+	@Test
+	public void userWithParentalControlLevelUCannotWatchMoviesExceptU() throws Exception {
+		ParentalControl userLevel = ParentalControl.LEVEL_U;
+		final List<ParentalControl> allowedRating = Arrays.asList(ParentalControl.LEVEL_PG,
+				ParentalControl.LEVEL_12, ParentalControl.LEVEL_15, ParentalControl.LEVEL_18);
+
+		verifyUserCannotWatch(userLevel, allowedRating);
+	}
+
+	@Test
+	public void userWithParentalControlLevelPGCannotWatchMoviesExceptUAndPG() throws Exception {
+		ParentalControl userLevel = ParentalControl.LEVEL_U;
+		final List<ParentalControl> allowedRating = Arrays.asList(ParentalControl.LEVEL_12, ParentalControl.LEVEL_15,
+				ParentalControl.LEVEL_18);
+
+		verifyUserCannotWatch(userLevel, allowedRating);
+	}
+
+	@Test
+	public void userWithParentalControlLevel12CannotWatchMoviesWith15And18() throws Exception {
+		ParentalControl userLevel = ParentalControl.LEVEL_U;
+		final List<ParentalControl> allowedRating = Arrays.asList(ParentalControl.LEVEL_15, ParentalControl.LEVEL_18);
+
+		verifyUserCannotWatch(userLevel, allowedRating);
+	}
+
+	@Test
+	public void userWithParentalControlLevel15CannotWatchMoviesWith18() throws Exception {
+		ParentalControl userLevel = ParentalControl.LEVEL_U;
+		final List<ParentalControl> allowedRating = Arrays.asList(ParentalControl.LEVEL_18);
+
+		verifyUserCannotWatch(userLevel, allowedRating);
+	}
+
+	@Test
+	public void returnFalseIfBothParentcontrolLevelAndMovieIDIsNull() {
+
+		try {
+			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(null, null);
+
+			boolean canWatch = parentalControlService.canWatchMovie(null, null);
+			assertTrue("For argument errors, return false", canWatch == false);
+		} catch (Exception e) {
+			assertTrue("For argument errors, return false", false);
+		}
+	}
+
+	@Test
+	public void returnFalseIfBothParentcontrolLevelAndMovieIDIsBlank() {
+
+		try {
+			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie("", "");
+
+			boolean canWatch = parentalControlService.canWatchMovie("", "");
+			assertTrue("For argument errors, return false", canWatch == false);
+		} catch (Exception e) {
+			assertTrue("For argument errors, return false", false);
+		}
+	}
+
+	@Test
+	public void returnFalseIfMovieIDIsNull() {
+
+		try {
+			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), null);
+
+			boolean canWatch = parentalControlService.canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), null);
+			assertTrue("For argument errors, return false", canWatch == false);
+		} catch (Exception e) {
+			assertTrue("For argument errors, return false", false);
+		}
+	}
+
+	@Test
+	public void returnFalseIfMovieIDIsBlank() {
+
+		try {
+			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), "");
+
+			boolean canWatch = parentalControlService.canWatchMovie(null, "");
+			assertTrue("For argument errors, return false", canWatch == false);
+		} catch (Exception e) {
+			assertTrue("For argument errors, return false", false);
+		}
+	}
+
+	@Test
+	public void returnFalseIfParentcontrolLevelIsNull() {
+
+		try {
+			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(null, MOVIE_TITLE);
+
+			boolean canWatch = parentalControlService.canWatchMovie(null, MOVIE_TITLE);
+			assertTrue("For argument errors, return false", canWatch == false);
+		} catch (Exception e) {
+			assertTrue("For argument errors, return false", false);
+		}
+	}
+
+	@Test
+	public void returnFalseIfParentcontrolLevelIsBlank() {
+
+		try {
+			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie("", MOVIE_TITLE);
+
+			boolean canWatch = parentalControlService.canWatchMovie("", MOVIE_TITLE);
+			assertTrue("For argument errors, return false", canWatch == false);
+		} catch (Exception e) {
+			assertTrue("For argument errors, return false", false);
+		}
+	}
+
+
+	@Test
+	public void returnFalseIfThirdPartySendsWrongControlLevel() {
 
 		try {
 			Mockito.doReturn("22").when(movieService).getParentalControlLevel(MOVIE_TITLE);
@@ -187,65 +232,25 @@ public class ParentalControlServiceTest {
 			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), MOVIE_TITLE);
 
 			boolean canWatch = parentalControlService.canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), MOVIE_TITLE);
-			fail("Technical Error should have occurred, but returned value is:" + canWatch);
-		} catch (TitleNotFoundException e) {
-			fail("TitleNotFoundException should have been converted to Exception");
-		} catch (TechnicalFailureException e) {
-			fail("Technical should have been converted to Exception");
+			assertTrue("For technical errors, return false", canWatch == false);
 		} catch (Exception e) {
-			assertTrue(e.getMessage().contains(SERVICEWRONGCONTROL_ERROR));
+			assertTrue("For technical errors, return false", false);
 		}
 	}
 
-	@Test
-	public void test_18_movietitle() {
-		assertEquals("With 18 control, one movie should be allowed", 1, getNoOfMoviewAllowed(ParentalControl.LEVEL_18.getLevel()));
-	}
 
-	@Test
-	public void test_15_movietitle() {
-		assertEquals("With 15 control, two movies should be allowed", 2, getNoOfMoviewAllowed(ParentalControl.LEVEL_15.getLevel()));
-	}
-
-	@Test
-	public void test_12_movietitle() {
-		assertEquals("With 12 control, three movies should be allowed", 3, getNoOfMoviewAllowed(ParentalControl.LEVEL_12.getLevel()));
-	}
-
-	@Test
-	public void test_PG_movietitle() {
-		assertEquals("With PG control, four movies should be allowed", 4, getNoOfMoviewAllowed(ParentalControl.LEVEL_PG.getLevel()));
-	}
-
-	@Test
-	public void test_U_movietitle() {
-		assertEquals("With U control, five movies should be allowed", 5, getNoOfMoviewAllowed(ParentalControl.LEVEL_U.getLevel()));
-	}
-
-
-	private int getNoOfMoviewAllowed(String movieControlLevel) {
-		int noOfAllowed = 0;
-		for (ParentalControl parentControl : ParentalControl.values()) {
-			try {
-				Mockito.doReturn(movieControlLevel).when(movieService).getParentalControlLevel(MOVIE_TITLE);
-				//				when(movieService.getParentalControlLevel(MOVIE_TITLE)).thenReturn(movieControlLevel);
-
-				//				when(parentalControlService.canWatchMovie(parentControl.getLevel(), MOVIE_TITLE)).thenReturn(false);
-
-				boolean canWatch = parentalControlService.canWatchMovie(parentControl.getLevel(), MOVIE_TITLE);
-				if (canWatch == true) {
-					noOfAllowed++;
-				}
-			} catch (TitleNotFoundException e) {
-				fail("Error should be TitleNotFoundException");
-			} catch (TechnicalFailureException e) {
-				fail("Error should be TitleNotFoundException");
-			} catch (Exception e) {
-				assertEquals("Parental control is not provided, Please set parental control", e.getMessage());
-			}
+	private void verifyUserCanWatch(ParentalControl userLevel, List<ParentalControl> allowedRating) throws Exception {
+		for(ParentalControl rating : allowedRating) {
+			Mockito.doReturn(rating.getLevel()).when(movieService).getParentalControlLevel(MOVIE_TITLE);
+			assertTrue(parentalControlService.canWatchMovie(userLevel.getLevel(), MOVIE_TITLE));
 		}
-		return noOfAllowed;
+	}
 
+	private void verifyUserCannotWatch(ParentalControl userLevel, List<ParentalControl> allowedRating) throws Exception {
+		for(ParentalControl rating : allowedRating) {
+			Mockito.doReturn(rating.getLevel()).when(movieService).getParentalControlLevel(MOVIE_TITLE);
+			assertTrue(!parentalControlService.canWatchMovie(userLevel.getLevel(), MOVIE_TITLE));
+		}
 	}
 
 }

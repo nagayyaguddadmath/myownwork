@@ -1,5 +1,6 @@
 package com.bskyb.internettv.parental_control_service;
 
+import com.bskyb.internettv.failure_exception.WrongArgumentException;
 import com.bskyb.internettv.thirdparty.MovieService;
 import com.bskyb.internettv.thirdparty.TechnicalFailureException;
 import com.bskyb.internettv.thirdparty.TitleNotFoundException;
@@ -12,46 +13,40 @@ public class ParentalControlServiceImpl implements ParentalControlService {
 
 	private MovieService movieService;
 
-	private static String TITLENOTFOUND_ERROR = "Movie Title Not found";
-	private static String TECHNICAL_ERROR = "Error occurred, currently you are not allowed to watch this movie";
-	private static String CONTROLNOTSET_ERROR = "Parental control is not provided, Please set parental control";
-	private static String SERVICEWRONGCONTROL_ERROR = "Parental control is not provided, Please set parental control";
+	private static final String TITLENOTFOUND_ERROR = "Movie Title Not found";
+	private static final String THIRDPARTYWRONGCONTROL_ERROR = "Parental control is not provided, Please set parental control";
 
 	public boolean canWatchMovie(String customerParentalControlLevel, String movieId) throws Exception {
 		try {
-			ParentalControl parentControlLevel = validateInput(customerParentalControlLevel, movieId);
+			validateInputParameters(customerParentalControlLevel, movieId);
+			ParentalControl parentControlLevel = validateAndReturnControlLevel(customerParentalControlLevel);
 			String movieServiceLevel = movieService.getParentalControlLevel(movieId);
 			ParentalControl movieControlLevel  = validateAndReturnControlLevel(movieServiceLevel);
 
-			if (parentControlLevel.getPriority() >= movieControlLevel.getPriority()) {
-				return true;
-			} else {
-				return false;
-			}
+			return parentControlLevel.getPriority() >= movieControlLevel.getPriority();
+			
 		} catch (TitleNotFoundException e) {
-			throw new Exception(TITLENOTFOUND_ERROR);
+			throw new WrongArgumentException(TITLENOTFOUND_ERROR, "movieId");
 		} catch (TechnicalFailureException e) {
-			throw new Exception(TECHNICAL_ERROR);
-		} catch (Exception exceptio) {
-			throw exceptio;
+			return false;
+		} catch (WrongArgumentException e) {
+			return false;
 		}
 	}
 
-	private ParentalControl validateInput(String customerParentalControlLevel, String movieId) throws Exception {
+	private void validateInputParameters(String customerParentalControlLevel, String movieId) throws Exception {
 		if (movieId == null || movieId.length() < 1) {
-			throw new Exception(TITLENOTFOUND_ERROR);
+			throw new WrongArgumentException(TITLENOTFOUND_ERROR, "movieId");
 		}
 		if (customerParentalControlLevel == null || customerParentalControlLevel.length() < 1) {
-			throw new Exception(CONTROLNOTSET_ERROR);
+			throw new WrongArgumentException(TITLENOTFOUND_ERROR, "customerParentalControlLevel");
 		}
-
-		return validateAndReturnControlLevel(customerParentalControlLevel);
 	}
 
 	private ParentalControl validateAndReturnControlLevel (String movieServiceLevel ) throws Exception {
 		ParentalControl movieControl = ParentalControl.getControlevel(movieServiceLevel);
 		if (movieControl == null) {
-			throw new Exception(SERVICEWRONGCONTROL_ERROR);
+			throw new WrongArgumentException(THIRDPARTYWRONGCONTROL_ERROR, "movieId");
 		}
 		return movieControl;
 	}
