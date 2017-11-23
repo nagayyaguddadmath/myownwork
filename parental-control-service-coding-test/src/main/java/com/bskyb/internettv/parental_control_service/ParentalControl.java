@@ -8,8 +8,8 @@ public enum ParentalControl {
 	LEVEL_15("15", 4),
 	LEVEL_18("18", 5);
 
-	private String level;
-	private int priority;
+	private final String level;
+	private final int priority;
 
 	private ParentalControl(String level, int priority) {
 		this.level = level;
