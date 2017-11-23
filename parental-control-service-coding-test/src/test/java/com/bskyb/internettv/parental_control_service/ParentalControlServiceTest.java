@@ -56,7 +56,7 @@ public class ParentalControlServiceTest {
 	public void test_both_blank_parameters() {
 
 		try {
-//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie("", "");
+			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie("", "");
 
 			boolean canWatch = parentalControlService.canWatchMovie("", "");
 			fail("Error should be TitleNotFoundException, but returned value is: " + canWatch);
@@ -73,7 +73,7 @@ public class ParentalControlServiceTest {
 	public void test_title_null_parameter() {
 
 		try {
-//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), null);
+			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), null);
 
 			boolean canWatch = parentalControlService.canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), null);
 			fail("Error should be TitleNotFoundException, but returned value is:" + canWatch);
@@ -90,7 +90,7 @@ public class ParentalControlServiceTest {
 	public void test_title_blank_parameter() {
 
 		try {
-//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), "");
+			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), "");
 
 			boolean canWatch = parentalControlService.canWatchMovie(null, "");
 			fail("Error should be TitleNotFoundException, but returned value is:" + canWatch);
@@ -107,7 +107,7 @@ public class ParentalControlServiceTest {
 	public void test_parentcontrol_null_parameter() {
 
 		try {
-//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(null, MOVIE_TITLE);
+			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(null, MOVIE_TITLE);
 
 			boolean canWatch = parentalControlService.canWatchMovie(null, MOVIE_TITLE);
 			fail("Error should be thrown as parental control is not set, but returned value is:" + canWatch);
@@ -124,7 +124,7 @@ public class ParentalControlServiceTest {
 	public void test_parentcontrol_blank_parameter() {
 
 		try {
-//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie("", MOVIE_TITLE);
+			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie("", MOVIE_TITLE);
 
 			boolean canWatch = parentalControlService.canWatchMovie("", MOVIE_TITLE);
 			fail("Error should be thrown as parental control is not set, but returned value is:" + canWatch);
@@ -144,7 +144,7 @@ public class ParentalControlServiceTest {
 			TitleNotFoundException exception = new TitleNotFoundException();
 			Mockito.doThrow(exception).when(movieService).getParentalControlLevel(MOVIE_TITLE);
 
-//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), MOVIE_TITLE);
+			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), MOVIE_TITLE);
 
 			boolean canWatch = parentalControlService.canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), MOVIE_TITLE);
 			fail("Error should be TitleNotFoundException, but returned value is:" + canWatch);
@@ -165,7 +165,7 @@ public class ParentalControlServiceTest {
 			TechnicalFailureException exception = new TechnicalFailureException();
 			Mockito.doThrow(exception).when(movieService).getParentalControlLevel(MOVIE_TITLE);
 
-//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), MOVIE_TITLE);
+			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), MOVIE_TITLE);
 
 			boolean canWatch = parentalControlService.canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), MOVIE_TITLE);
 			fail("Technical Error should have occurred, but returned value is:" + canWatch);
@@ -184,7 +184,7 @@ public class ParentalControlServiceTest {
 		try {
 			Mockito.doReturn("22").when(movieService).getParentalControlLevel(MOVIE_TITLE);
 
-//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), MOVIE_TITLE);
+			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), MOVIE_TITLE);
 
 			boolean canWatch = parentalControlService.canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), MOVIE_TITLE);
 			fail("Technical Error should have occurred, but returned value is:" + canWatch);
