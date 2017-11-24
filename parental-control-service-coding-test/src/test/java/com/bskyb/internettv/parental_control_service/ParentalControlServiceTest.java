@@ -31,7 +31,7 @@ public class ParentalControlServiceTest {
 		//Create mock object of MovieService
 		movieService = mock(MovieService.class);
 
-		//		parentalControlService = mock(ParentalControlService.class);
+		//				parentalControlService = mock(ParentalControlService.class);
 		parentalControlService = new ParentalControlServiceImpl(movieService);
 	}
 
@@ -59,7 +59,7 @@ public class ParentalControlServiceTest {
 			TechnicalFailureException exception = new TechnicalFailureException();
 			Mockito.doThrow(exception).when(movieService).getParentalControlLevel(MOVIE_TITLE);
 
-			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), MOVIE_TITLE);
+			//			Mockito.doReturn(true).when(parentalControlService).canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), MOVIE_TITLE);
 
 			boolean canWatch = parentalControlService.canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), MOVIE_TITLE);
 			assertTrue("For technical errors, return false", canWatch == false);
@@ -148,7 +148,7 @@ public class ParentalControlServiceTest {
 	public void returnFalseIfBothParentcontrolLevelAndMovieIDIsNull() {
 
 		try {
-			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(null, null);
+			//			Mockito.doReturn(true).when(parentalControlService).canWatchMovie(null, null);
 
 			boolean canWatch = parentalControlService.canWatchMovie(null, null);
 			assertTrue("For argument errors, return false", canWatch == false);
@@ -161,7 +161,7 @@ public class ParentalControlServiceTest {
 	public void returnFalseIfBothParentcontrolLevelAndMovieIDIsBlank() {
 
 		try {
-			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie("", "");
+			//			Mockito.doReturn(true).when(parentalControlService).canWatchMovie("", "");
 
 			boolean canWatch = parentalControlService.canWatchMovie("", "");
 			assertTrue("For argument errors, return false", canWatch == false);
@@ -174,7 +174,7 @@ public class ParentalControlServiceTest {
 	public void returnFalseIfMovieIDIsNull() {
 
 		try {
-			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), null);
+			//			Mockito.doReturn(true).when(parentalControlService).canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), null);
 
 			boolean canWatch = parentalControlService.canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), null);
 			assertTrue("For argument errors, return false", canWatch == false);
@@ -187,7 +187,7 @@ public class ParentalControlServiceTest {
 	public void returnFalseIfMovieIDIsBlank() {
 
 		try {
-			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), "");
+			//			Mockito.doReturn(true).when(parentalControlService).canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), "");
 
 			boolean canWatch = parentalControlService.canWatchMovie(null, "");
 			assertTrue("For argument errors, return false", canWatch == false);
@@ -200,7 +200,7 @@ public class ParentalControlServiceTest {
 	public void returnFalseIfParentcontrolLevelIsNull() {
 
 		try {
-			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(null, MOVIE_TITLE);
+			//			Mockito.doReturn(true).when(parentalControlService).canWatchMovie(null, MOVIE_TITLE);
 
 			boolean canWatch = parentalControlService.canWatchMovie(null, MOVIE_TITLE);
 			assertTrue("For argument errors, return false", canWatch == false);
@@ -213,7 +213,7 @@ public class ParentalControlServiceTest {
 	public void returnFalseIfParentcontrolLevelIsBlank() {
 
 		try {
-			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie("", MOVIE_TITLE);
+			//			Mockito.doReturn(true).when(parentalControlService).canWatchMovie("", MOVIE_TITLE);
 
 			boolean canWatch = parentalControlService.canWatchMovie("", MOVIE_TITLE);
 			assertTrue("For argument errors, return false", canWatch == false);
@@ -229,7 +229,7 @@ public class ParentalControlServiceTest {
 		try {
 			Mockito.doReturn("22").when(movieService).getParentalControlLevel(MOVIE_TITLE);
 
-			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), MOVIE_TITLE);
+			//			Mockito.doReturn(true).when(parentalControlService).canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), MOVIE_TITLE);
 
 			boolean canWatch = parentalControlService.canWatchMovie(ParentalControl.LEVEL_PG.getLevel(), MOVIE_TITLE);
 			assertTrue("For technical errors, return false", canWatch == false);
@@ -242,6 +242,9 @@ public class ParentalControlServiceTest {
 	private void verifyUserCanWatch(ParentalControl userLevel, List<ParentalControl> allowedRating) throws Exception {
 		for(ParentalControl rating : allowedRating) {
 			Mockito.doReturn(rating.getLevel()).when(movieService).getParentalControlLevel(MOVIE_TITLE);
+
+			//			Mockito.doReturn(false).when(parentalControlService).canWatchMovie(userLevel.getLevel(), MOVIE_TITLE);
+
 			assertTrue(parentalControlService.canWatchMovie(userLevel.getLevel(), MOVIE_TITLE));
 		}
 	}
@@ -249,6 +252,9 @@ public class ParentalControlServiceTest {
 	private void verifyUserCannotWatch(ParentalControl userLevel, List<ParentalControl> allowedRating) throws Exception {
 		for(ParentalControl rating : allowedRating) {
 			Mockito.doReturn(rating.getLevel()).when(movieService).getParentalControlLevel(MOVIE_TITLE);
+
+			//			Mockito.doReturn(true).when(parentalControlService).canWatchMovie(userLevel.getLevel(), MOVIE_TITLE);
+
 			assertTrue(!parentalControlService.canWatchMovie(userLevel.getLevel(), MOVIE_TITLE));
 		}
 	}
